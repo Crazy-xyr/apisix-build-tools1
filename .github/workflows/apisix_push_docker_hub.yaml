@@ -26,11 +26,11 @@ jobs:
       - uses: actions/download-artifact@v4.1.9
         with:
           github-token: ${{ secrets.API_TOKEN }}
-          path: ${{ github.WORKSPACE  }}
           run-id: ${{ inputs.run_id }}
       - name: Build and run
         run: |
           file apisix_0.0.0-0~ubuntu20.04_amd64.deb && mv ${{ github.WORKSPACE  }}/apisix_0.0.0-0~ubuntu20.04_amd64.deb docker/debian/
+          ls -la apisix_0.0.0-0~ubuntu20.04_amd64.deb
           cd docker
           ls -la  ${{ github.WORKSPACE  }}/docker/debian
           make build-on-${{ matrix.platform }}
