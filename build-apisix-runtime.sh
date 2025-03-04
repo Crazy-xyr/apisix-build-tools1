@@ -14,6 +14,8 @@ OR_PREFIX=${OR_PREFIX:="/usr/local/openresty"}
 OPENSSL_PREFIX=${OPENSSL_PREFIX:=$OR_PREFIX/openssl3}
 zlib_prefix=${OR_PREFIX}/zlib
 pcre_prefix=${OR_PREFIX}/pcre
+libunwind_prefix=${OR_PREFIX}/libunwind
+gperftools_prefix=${OR_PREFIX}/gperftools
 
 cc_opt=${cc_opt:-"-DNGX_LUA_ABORT_AT_PANIC -I$zlib_prefix/include -I$pcre_prefix/include -I$OPENSSL_PREFIX/include"}
 ld_opt=${ld_opt:-"-L$zlib_prefix/lib -L$pcre_prefix/lib -L$OPENSSL_PREFIX/lib -Wl,-rpath,$zlib_prefix/lib:$pcre_prefix/lib:$OPENSSL_PREFIX/lib"}
@@ -21,6 +23,8 @@ ld_opt=${ld_opt:-"-L$zlib_prefix/lib -L$pcre_prefix/lib -L$OPENSSL_PREFIX/lib -W
 
 # dependencies for building openresty
 OPENSSL_VERSION=${OPENSSL_VERSION:-"3.2.0"}
+libunwind_VERSION=${libunwind_VERSION:-"1.8.1"}
+gperftools_VERSION=${gperftools_VERSION:-"2.16"}
 OPENRESTY_VERSION="1.27.1.1"
 ngx_multi_upstream_module_ver="1.3.1"
 mod_dubbo_ver="1.0.2"
@@ -28,6 +32,23 @@ apisix_nginx_module_ver="1.18.0"
 wasm_nginx_module_ver="0.7.0"
 lua_var_nginx_module_ver="v0.5.3"
 lua_resty_events_ver="0.2.0"
+
+install_gperftools(){
+wget --no-check-certificate https://github.com/libunwind/libunwind/releases/download/v${libunwind_VERSION}/libunwind-${libunwind_VERSION}.tar.gz
+wget --no-check-certificate https://github.com/gperftools/gperftools/releases/download/gperftools-${gperftools_VERSION}/gperftools-${gperftools_VERSION}.tar.gz
+tar xf libunwind-${libunwind_VERSION}.tar.gz
+tar xf gperftools-${gperftools_VERSION}.tar.gz
+cd libunwind-${libunwind_VERSION}
+./configure --prefix=${libunwind_prefix} && make -j $(nproc) && make install 
+export LDFLAGS="-Wl,-rpath,$libunwind_prefix/lib:$gperftools_prefix/lib"
+
+export LD_LIBRARY_PATH="$libunwind_prefix/lib"
+cd ../gperftools-${gperftools_VERSION}
+sed -i '70s/auto local_noopt = \[\] (void\* ptr) ATTRIBUTE_NOINLINE -> void\* {/auto local_noopt = \[\] (void\* ptr) ATTRIBUTE_NOINLINE  {/'  src/tests/sampling_test.cc
+./configure --prefix=${gperftools_prefix} && make -j $(nproc) LD_LIBRARY_PATH=$LD_LIBRARY_PATH && make install
+
+cd ..
+}
 
 
 install_openssl_3(){
@@ -73,7 +94,7 @@ repo=$(basename "$prev_workdir")
 workdir=$(mktemp -d)
 cd "$workdir" || exit 1
 
-
+install_gperftools 
 install_openssl_3
 
 wget --no-check-certificate https://openresty.org/download/openresty-${OPENRESTY_VERSION}.tar.gz
@@ -159,8 +180,8 @@ fi
 
 
 ./configure --prefix="$OR_PREFIX" \
-    --with-cc-opt="-DAPISIX_RUNTIME_VER=$runtime_version $cc_opt" \
-    --with-ld-opt="-Wl,-rpath,$OR_PREFIX/wasmtime-c-api/lib $ld_opt" \
+    --with-cc-opt="-DAPISIX_RUNTIME_VER=$runtime_version $cc_opt -I$libunwind_prefix/include -I$gperftools_prefix/lib " \
+    --with-ld-opt="-Wl,-rpath,$OR_PREFIX/wasmtime-c-api/lib $ld_opt -L$libunwind_prefix/lib -L$gperftools_prefix/lib -Wl,-rpath,$libunwind_prefix/lib:$gperftools_prefix/lib " \
     $debug_args \
     --add-module=../mod_dubbo-${mod_dubbo_ver} \
     --add-module=../ngx_multi_upstream_module-${ngx_multi_upstream_module_ver} \
@@ -180,6 +201,7 @@ fi
     --with-stream_ssl_preread_module \
     --with-http_v2_module \
     --with-http_v3_module \
+    --with-google_perftools_module \
     --without-mail_pop3_module \
     --without-mail_imap_module \
     --without-mail_smtp_module \
