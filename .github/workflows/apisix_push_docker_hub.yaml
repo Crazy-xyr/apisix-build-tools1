@@ -6,7 +6,8 @@ on:
     inputs:
       run_id:
         description: 'The run ID of the workflow to download artifacts from'
-        required: true
+        required: false
+        default: '13627823239'
         type: string
 
 jobs:
@@ -25,6 +26,7 @@ jobs:
         uses: actions/checkout@v2
       - uses: actions/download-artifact@v4.1.9
         with:
+          name: 'apisix_0.0.0-0~ubuntu20.04_amd64.deb'
           github-token: ${{ secrets.API_TOKEN }}
           run-id: ${{ inputs.run_id }}
       - name: Build and run
