@@ -21,8 +21,8 @@ SHELL := bash
 
 
 # APISIX ARGS
-APISIX_VERSION ?= 3.11.0
-MAX_APISIX_VERSION ?= 3.11.0
+APISIX_VERSION ?= 3.11.1
+MAX_APISIX_VERSION ?= 3.11.1
 IMAGE_NAME = apache/apisix
 IMAGE_TAR_NAME = apache_apisix
 APISIX_REPO = https://github.com/apache/apisix
@@ -133,7 +133,7 @@ push-multiarch-on-debian:
 	cp ./utils/check_standalone_config.sh debian/check_standalone_config.sh
 	$(ENV_DOCKER) buildx build --network=host --push \
 		-t $(ENV_APISIX_IMAGE_TAG_NAME)-debian \
-		--platform linux/amd64,linux/arm64 \
+		--platform linux/amd64 \
 		-f ./debian/Dockerfile debian
 	rm -f debian/check_standalone_config.sh
 	@$(call func_echo_success_status, "$@ -> [ Done ]")
