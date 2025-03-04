@@ -31,9 +31,8 @@ jobs:
           run-id: ${{ inputs.run_id }}
       - name: Build and run
         run: |
-          file apisix_0.0.0-0~ubuntu20.04_amd64.deb && mv ${{ github.WORKSPACE  }}/apisix_0.0.0-0~ubuntu20.04_amd64.deb docker/debian/
+          mv ${{ github.WORKSPACE  }}/apisix_0.0.0-0~ubuntu20.04_amd64.deb docker/debian/
           cd docker
-          ls -la  ${{ github.WORKSPACE  }}/docker/debian/apisix_0.0.0-0~ubuntu20.04_amd64.deb
           make build-on-${{ matrix.platform }}
           wget https://raw.githubusercontent.com/apache/apisix-docker/master/compose/docker-compose-release.yaml
           docker compose -f ./docker-compose-release.yaml up -d
@@ -75,16 +74,18 @@ jobs:
       - name: push apisix:latest image to docker hub
         if: matrix.platform == 'debian'
         run: |
+          cd ${{ github.WORKSPACE  }}/docker
           make push-multiarch-on-latest
       - name: save apisix:latest image to docker hub
         if: matrix.platform == 'debian'
         run: |
+          cd ${{ github.WORKSPACE  }}/docker
           make save-debian-tar 
       - name: Publish Artifact
         uses: actions/upload-artifact@v4.0.0
         with:
           name: apache_apisix_3.11.0-debian.tar
-          path: ./package
+          path: ${{ github.WORKSPACE  }}/docker/package
           retention-days: 5
           if-no-files-found: error
           
