@@ -26,11 +26,13 @@ jobs:
       - uses: actions/download-artifact@v4.1.9
         with:
           github-token: ${{ secrets.API_TOKEN }}
-          path: ${{ github.WORKSPACE  }}/docker/debian
+          path: ${{ github.WORKSPACE  }}
           run-id: ${{ inputs.run_id }}
       - name: Build and run
         run: |
           cd docker
+          wget https://github.com/Crazy-xyr/apisix-build-tools1/actions/runs/13627823239/artifacts/2680428032
+          unzip apisix_0.0.0-0~ubuntu20.04_amd64.deb.zip -d ./debian/
           ls -la  ${{ github.WORKSPACE  }}/docker/debian
           make build-on-${{ matrix.platform }}
           wget https://raw.githubusercontent.com/apache/apisix-docker/master/compose/docker-compose-release.yaml
