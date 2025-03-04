@@ -162,7 +162,7 @@ push-multiarch-on-latest:
 		cp ./utils/check_standalone_config.sh debian/check_standalone_config.sh; \
 		$(ENV_DOCKER) buildx build --network=host --push \
 			-t $(IMAGE_NAME):latest \
-			--platform linux/amd64,linux/arm64 \
+			--platform linux/amd64 \
 			-f ./debian/Dockerfile debian; \
 		rm -f debian/check_standalone_config.sh; \
 	fi
