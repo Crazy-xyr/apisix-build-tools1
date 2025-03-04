@@ -2,6 +2,8 @@ name: Push apisix to Docker image
 on:
   push:
     branches: ['release/apisix-**']
+  workflow_dispatch:
+
 
 jobs:
   build:
