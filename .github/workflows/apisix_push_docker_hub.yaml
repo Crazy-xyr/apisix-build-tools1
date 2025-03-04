@@ -3,7 +3,11 @@ on:
   push:
     branches: ['release/apisix-**']
   workflow_dispatch:
-
+    inputs:
+      run_id:
+        description: 'The run ID of the workflow to download artifacts from'
+        required: true
+        type: string
 
 jobs:
   build:
@@ -24,6 +28,7 @@ jobs:
         with:
           github-token: ${{ secrets.API_TOKEN }}
           path: /tmp
+          run-id: ${{ inputs.run_id }}
       - name: Build and run
         run: |
           cd docker
