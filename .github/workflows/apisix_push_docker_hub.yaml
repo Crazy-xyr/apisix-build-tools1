@@ -17,7 +17,6 @@ jobs:
       matrix:
         platform:
           - debian
-          - redhat
     env:
       APISIX_DOCKER_TAG: 3.11.0-${{ matrix.platform }}
 
@@ -32,6 +31,7 @@ jobs:
       - name: Build and run
         run: |
           cd docker
+          ls -la /tmp
           make build-on-${{ matrix.platform }}
           wget https://raw.githubusercontent.com/apache/apisix-docker/master/compose/docker-compose-release.yaml
           docker compose -f ./docker-compose-release.yaml up -d
