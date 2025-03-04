@@ -42,13 +42,13 @@ RUN dpkg -i /tmp/apisix.deb || (apt --fix-broken -y install &&dpkg -i /tmp/apisi
 RUN  apt-get purge -y --auto-remove \
     && rm /usr/local/openresty/bin/etcdctl \
     && openresty -V \
-    && apisix version
+    && apisix version && rm -rf  /tmp/apisix.deb
 
 COPY ./install-brotli.sh /install-brotli.sh
 RUN chmod +x /install-brotli.sh \  
     && cd / && ./install-brotli.sh && rm -rf /install-brotli.sh
 
-RUN apt-get -y purge --auto-remove curl wget gnupg --allow-remove-essential
+RUN apt-get -y purge --auto-remove curl wget gnupg --allow-remove-essential 
 
 WORKDIR /usr/local/apisix
 
@@ -62,7 +62,7 @@ USER apisix
 
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /usr/local/apisix/logs/access.log \
-    && ln -sf /dev/stderr /usr/local/apisix/logs/error.log
+    && ln -sf /dev/stderr /usr/local/apisix/logs/error.log 
 
 EXPOSE 9080 9443
 
