@@ -31,7 +31,7 @@ jobs:
       - name: Build and run
         run: |
           cd docker
-          ls -la /tmp
+          ls -la  ${{ github.WORKSPACE  }}/docker/debian
           make build-on-${{ matrix.platform }}
           wget https://raw.githubusercontent.com/apache/apisix-docker/master/compose/docker-compose-release.yaml
           docker compose -f ./docker-compose-release.yaml up -d
