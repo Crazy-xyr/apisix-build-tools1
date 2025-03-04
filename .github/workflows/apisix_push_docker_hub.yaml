@@ -18,7 +18,10 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
-
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: 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
+          path: /tmp
       - name: Build and run
         run: |
           cd docker
