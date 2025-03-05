@@ -23,8 +23,8 @@ SHELL := bash
 # APISIX ARGS
 APISIX_VERSION ?= 3.11.1
 MAX_APISIX_VERSION ?= 3.11.1
-IMAGE_NAME = apache/apisix
-IMAGE_TAR_NAME = apache_apisix
+IMAGE_NAME = crazy531/apisix
+IMAGE_TAR_NAME = crazy531_apisix
 APISIX_REPO = https://github.com/apache/apisix
 APISIX_REPO_BRANCH = master
 LOCAL_CODE_PATH = 0
