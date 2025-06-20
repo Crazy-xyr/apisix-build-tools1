@@ -26,13 +26,16 @@ jobs:
         uses: actions/checkout@v2
       - uses: actions/download-artifact@v4.1.9
         with:
-          name: 'apisix_0.0.0-0~ubuntu20.04_amd64.deb'
+          pattern: 'apisix.*deb'
+          merge-multiple: true
           github-token: ${{ secrets.API_TOKEN }}
+          path: ${{ github.WORKSPACE  }}/docker/debian/
           run-id: ${{ inputs.run_id }}
       - name: Build and run
         run: |
-          mv ${{ github.WORKSPACE  }}/apisix_0.0.0-0~ubuntu20.04_amd64.deb docker/debian/
+          echo ${{ github.run_id }}
           cd docker
+          mv ./docker/debian/*.deb ./docker/debian/apisix.deb
           make build-on-${{ matrix.platform }}
           wget https://raw.githubusercontent.com/apache/apisix-docker/master/compose/docker-compose-release.yaml
           docker compose -f ./docker-compose-release.yaml up -d
@@ -89,3 +92,4 @@ jobs:
           retention-days: 5
           if-no-files-found: error
           
+

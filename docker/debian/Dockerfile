@@ -18,8 +18,9 @@
 FROM debian:bullseye-slim
 
 ARG APISIX_VERSION=3.11.1
+ARG apisix_deb='./apisix.deb'
 
-COPY ./apisix_0.0.0-0~ubuntu20.04_amd64.deb /tmp/apisix.deb
+COPY ./apisix.deb /tmp/apisix.deb
 RUN set -ex; \
     arch=$(dpkg --print-architecture); \
     apt update; \
