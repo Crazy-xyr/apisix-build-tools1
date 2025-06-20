@@ -35,7 +35,7 @@ jobs:
         run: |
           echo ${{ github.run_id }}
           cd docker
-          mv ./docker/debian/*.deb ./docker/debian/apisix.deb
+          mv ./debian/*.deb ./debian/apisix.deb
           make build-on-${{ matrix.platform }}
           wget https://raw.githubusercontent.com/apache/apisix-docker/master/compose/docker-compose-release.yaml
           docker compose -f ./docker-compose-release.yaml up -d
